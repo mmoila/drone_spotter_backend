@@ -54,7 +54,6 @@ const updateDroneData = (currentDrones, newDrones) => {
     withinNDZ(drone.closestDistance)
   )
   const newDroneSerials = newDronesToAdd.map((drone) => drone.serialNumber)
-  console.log(currentDrones)
   const filteredDrones = currentDrones
     .filter((d) => !newDroneSerials.includes(d.serialNumber))
     .concat(newDronesToAdd)

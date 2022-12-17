@@ -36,15 +36,15 @@ app.listen(PORT, () => {
 app.ws("/", (ws, req) => {
   ws.on("message", () => {
     setInterval(async () => {
-      console.log("opened")
+      const droneData = await getDroneData()
 
-      const response = await getDroneData()
-
-      parseString(response.data, (err, result) => {
-        const droneList = parseDroneData(result)
-        ws.send(JSON.stringify(droneList))
+      parseString(droneData, async (err, result) => {
+        let droneList = parseDroneData(result)
+        droneDatabase = updateDroneData(droneDatabase, droneList)
+        droneDatabase = await combineDroneWithOwner(droneDatabase)
+        ws.send(JSON.stringify(droneDatabase))
       })
-    }, 100000)
+    }, 5000)
   })
 })
 
