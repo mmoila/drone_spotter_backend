@@ -1,3 +1,9 @@
-let PORT = 3001
+require("dotenv").config()
 
-module.exports = { PORT }
+let PORT = 3001
+let MONGODB_URI =
+  process.env.NODE_ENV === "test"
+    ? process.env.TEST_MONGODB_URI
+    : process.env.MONGODB_URI
+
+module.exports = { PORT, MONGODB_URI }
