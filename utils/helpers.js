@@ -17,6 +17,12 @@ const parseDroneData = (data) => {
   return parsedData
 }
 
+const getIntruderDrones = (data) => {
+  return parseDroneData(data).filter((drone) =>
+    withinNDZ(drone.closestDistance)
+  )
+}
+
 const parseOwnerData = (data) => {
   return {
     name:
@@ -31,38 +37,15 @@ const parseOwnerData = (data) => {
 const combineDroneWithOwner = (droneList, getData = getDroneOwnerData) => {
   const dronePromises = droneList.map(async (drone) => {
     const ownerData = await getData(drone.serialNumber)
+    const dateObject = new Date(Date.parse(drone.timeStamp))
+    const expireDate = dateObject.setMinutes(dateObject.getMinutes() + 10)
     return {
       ...drone,
       owner: parseOwnerData(ownerData),
+      expireAt: expireDate,
     }
   })
   return Promise.all(dronePromises)
-}
-
-const updateDistance = (drone, oldDroneList) => {
-  const oldDrone = oldDroneList.find(
-    (d) => d.serialNumber === drone.serialNumber
-  )
-  if (oldDrone && drone.closestDistance > oldDrone.closestDistance) {
-    return oldDrone.closestDistance
-  }
-  return drone.closestDistance
-}
-
-const updateDroneData = (currentDrones, newDrones) => {
-  const newDronesToAdd = newDrones.filter((drone) =>
-    withinNDZ(drone.closestDistance)
-  )
-  const newDroneSerials = newDronesToAdd.map((drone) => drone.serialNumber)
-  const filteredDrones = currentDrones
-    .filter((d) => !newDroneSerials.includes(d.serialNumber))
-    .concat(newDronesToAdd)
-    .filter((d) => !dataExpired(d.timeStamp))
-
-  return filteredDrones.map((d) => ({
-    ...d,
-    closestDistance: updateDistance(d, currentDrones),
-  }))
 }
 
 const distanceFromNest = ([posX, posY]) => {
@@ -75,16 +58,11 @@ const withinNDZ = (dist) => {
   return dist <= 100000
 }
 
-const dataExpired = (observationTime, timenow = Date.now()) => {
-  const diff = timenow - Date.parse(observationTime)
-  return diff / 60000 > 10
-}
-
 module.exports = {
   parseDroneData,
-  updateDroneData,
   withinNDZ,
   parseOwnerData,
   distanceFromNest,
   combineDroneWithOwner,
+  getIntruderDrones,
 }
