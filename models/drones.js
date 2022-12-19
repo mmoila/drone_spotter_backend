@@ -1,12 +1,13 @@
 const mongoose = require("mongoose")
 
-droneSchema = new mongoose.Schema({
+const droneSchema = new mongoose.Schema({
   timeStamp: Date,
   serialNumber: String,
   closestDistance: Number,
-  owner: { type: mongoose.Schema.Types.ObjectId, ref: "Owner" },
+  owner: { name: String, phoneNumber: String, email: String },
+  expireAt: Date,
 })
 
-const Drone = mongoose.model("Drone", droneSchema)
+droneSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 
-module.exports = Drone
+module.exports = mongoose.model("Drone", droneSchema)
