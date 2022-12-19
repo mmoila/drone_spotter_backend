@@ -42,25 +42,3 @@ test("owner is combined with drones correctly", async () => {
     expect(drone).toHaveProperty("owner")
   })
 })
-
-describe("When adding new data to list of drones", () => {
-  const newDrone = {
-    timeStamp: new Date(Date.now()).toISOString(),
-    serialNumber: "SN-TAnpkSiEeM",
-    closestDistance: 73372.7528603612,
-  }
-  const elevenMinutesAgo = new Date(Date.now() - 660000).toISOString()
-  droneData.push({
-    timeStamp: elevenMinutesAgo,
-    serialNumber: "SN-TAnpkSiEeK",
-    closestDistance: 73372.7528603612,
-  })
-
-  test("old entries and entries from same drone are removed", () => {
-    const newDroneData = updateDroneData(droneData, [newDrone])
-    expect(newDroneData.length).toBe(4)
-    expect(
-      newDroneData.find((d) => d.serialNumber == newDrone.serialNumber)
-    ).toMatchObject(newDrone)
-  })
-})
