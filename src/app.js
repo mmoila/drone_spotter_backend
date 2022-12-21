@@ -1,7 +1,5 @@
 const express = require("express")
 const app = express()
-const expressWs = require("express-ws")(app)
-const droneRouter = require("./controllers/drones")
 const { errorHandler } = require("./utils/middleware")
 const mongoose = require("mongoose")
 const config = require("./utils/config")
@@ -16,8 +14,6 @@ setInterval(async () => {
 mongoose.set("strictQuery", false)
 mongoose.connect(config.MONGODB_URI)
 
-app.use("/api/blogs", droneRouter)
-app.on("newDroneData", () => console.log("emitter called"))
 app.use(errorHandler)
 
 module.exports = app
