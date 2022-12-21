@@ -9,6 +9,9 @@ const parseDroneData = (data) => {
   const drones = data.report.capture.drone
 
   const parsedData = drones.map((drone) => {
+    const dateObject = new Date(Date.parse(timeStamp))
+    const expireDate = dateObject.setMinutes(dateObject.getMinutes() + 10)
+
     return {
       timeStamp: timeStamp,
       serialNumber: drone.serialNumber._text,
@@ -16,6 +19,11 @@ const parseDroneData = (data) => {
         drone.positionX._text,
         drone.positionY._text,
       ]),
+      position: [
+        parseFloat(drone.positionX._text),
+        parseFloat(drone.positionY._text),
+      ],
+      expireAt: expireDate,
     }
   })
   return parsedData
@@ -64,14 +72,12 @@ const parseOwnerData = (data) => {
 const combineDronesWithOwners = (droneList, getData = getDroneOwnerData) => {
   const dronePromises = droneList.map(async (drone) => {
     const ownerData = await getData(drone.serialNumber)
-    const dateObject = new Date(Date.parse(drone.timeStamp))
-    const expireDate = dateObject.setMinutes(dateObject.getMinutes() + 10)
     return {
       ...drone,
       owner: parseOwnerData(ownerData),
-      expireAt: expireDate,
     }
   })
+
   return Promise.all(dronePromises)
 }
 

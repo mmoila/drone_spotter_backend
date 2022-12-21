@@ -4,6 +4,7 @@ const droneSchema = new mongoose.Schema({
   timeStamp: Date,
   serialNumber: String,
   closestDistance: Number,
+  position: Array,
   owner: { name: String, phoneNumber: String, email: String },
   expireAt: Date,
 })
