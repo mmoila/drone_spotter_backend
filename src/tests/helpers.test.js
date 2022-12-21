@@ -4,7 +4,7 @@ const {
   withinNDZ,
   parseOwnerData,
   distanceFromNest,
-  combineDroneWithOwner,
+  combineDronesWithOwners,
 } = require("../utils/helpers")
 
 test("distance from nest is calculated correctly", () => {
@@ -37,7 +37,7 @@ test("drone owner data is parsed correctly", () => {
 
 test("owner is combined with drones correctly", async () => {
   const owner = parseOwnerData(ownerData)
-  const droneList = await combineDroneWithOwner(droneData, (arg) => owner)
+  const droneList = await combineDronesWithOwners(droneData, (arg) => owner)
   droneList.forEach((drone) => {
     expect(drone).toHaveProperty("owner")
   })

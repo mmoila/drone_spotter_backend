@@ -1,16 +1,20 @@
-const { getDroneOwnerData } = require("./droneQuery")
+const { getDroneOwnerData, getDroneData } = require("./droneQuery")
+const { xml2json } = require("xml-js")
+const Drone = require("../models/drones")
+const EventEmitter = require("events")
+const emitter = new EventEmitter()
 
 const parseDroneData = (data) => {
-  const timeStamp = data.report.capture[0]["$"].snapshotTimestamp
-  const drones = data.report.capture[0].drone
+  const timeStamp = data.report.capture._attributes.snapshotTimestamp
+  const drones = data.report.capture.drone
 
   const parsedData = drones.map((drone) => {
     return {
       timeStamp: timeStamp,
-      serialNumber: drone.serialNumber[0],
+      serialNumber: drone.serialNumber._text,
       closestDistance: distanceFromNest([
-        drone.positionX[0],
-        drone.positionY[0],
+        drone.positionX._text,
+        drone.positionY._text,
       ]),
     }
   })
@@ -21,6 +25,29 @@ const getIntruderDrones = (data) => {
   return parseDroneData(data).filter((drone) =>
     withinNDZ(drone.closestDistance)
   )
+}
+
+const updateDroneData = async () => {
+  let droneData = await getDroneData()
+  const parsedData = JSON.parse(xml2json(droneData, { compact: true }))
+  let droneList = await combineDronesWithOwners(getIntruderDrones(parsedData))
+
+  droneList.forEach(async (drone) => {
+    const query = { serialNumber: drone.serialNumber }
+    const oldDrone = await Drone.findOneAndReplace(query, drone)
+    if (oldDrone) {
+      await Drone.findOneAndUpdate(query, {
+        closestDistance: Math.min(
+          drone.closestDistance,
+          oldDrone.closestDistance
+        ),
+      })
+    } else {
+      await new Drone(drone).save()
+    }
+  })
+
+  emitter.emit("DronesUpdated")
 }
 
 const parseOwnerData = (data) => {
@@ -34,7 +61,7 @@ const parseOwnerData = (data) => {
   }
 }
 
-const combineDroneWithOwner = (droneList, getData = getDroneOwnerData) => {
+const combineDronesWithOwners = (droneList, getData = getDroneOwnerData) => {
   const dronePromises = droneList.map(async (drone) => {
     const ownerData = await getData(drone.serialNumber)
     const dateObject = new Date(Date.parse(drone.timeStamp))
@@ -63,6 +90,8 @@ module.exports = {
   withinNDZ,
   parseOwnerData,
   distanceFromNest,
-  combineDroneWithOwner,
+  combineDronesWithOwners,
   getIntruderDrones,
+  updateDroneData,
+  emitter,
 }
