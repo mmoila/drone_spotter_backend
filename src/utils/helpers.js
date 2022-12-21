@@ -39,7 +39,12 @@ const updateDroneData = async () => {
   let droneData = await getDroneData()
   const parsedData = JSON.parse(xml2json(droneData, { compact: true }))
   let droneList = await combineDronesWithOwners(getIntruderDrones(parsedData))
+  await updateDroneDatabase(droneList)
 
+  emitter.emit("DronesUpdated")
+}
+
+const updateDroneDatabase = async (droneList) => {
   droneList.forEach(async (drone) => {
     const query = { serialNumber: drone.serialNumber }
     const oldDrone = await Drone.findOneAndReplace(query, drone)
@@ -54,8 +59,6 @@ const updateDroneData = async () => {
       await new Drone(drone).save()
     }
   })
-
-  emitter.emit("DronesUpdated")
 }
 
 const parseOwnerData = (data) => {
