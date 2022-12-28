@@ -3,6 +3,7 @@ const Drone = require("../models/drones")
 const app = require("../app")
 
 beforeEach(async () => {
+  console.log(mongoose.connection.readyState)
   await Drone.deleteMany({})
 })
 

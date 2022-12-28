@@ -91,4 +91,4 @@ const rawDroneData = `<report>
 </capture>
 </report>`
 
-module.exports = { droneData, ownerData }
+module.exports = { droneData, ownerData, rawDroneData }

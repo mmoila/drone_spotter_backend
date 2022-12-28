@@ -1,10 +1,11 @@
-const { droneData, ownerData } = require("./testHelper")
+const { droneData, ownerData, rawDroneData } = require("./testHelper")
 const {
   updateDroneData,
   withinNDZ,
   parseOwnerData,
   distanceFromNest,
   combineDronesWithOwners,
+  parseDroneData,
 } = require("../utils/helpers")
 
 test("distance from nest is calculated correctly", () => {
@@ -17,6 +18,22 @@ test("distance from nest is calculated correctly", () => {
   expect(result1).toBeTruthy()
   expect(resutl2).toBeTruthy()
   expect(result3).toBeFalsy()
+})
+
+test("drone xml data is parsed correctly", () => {
+  const parsedDroneData = parseDroneData(rawDroneData)
+  expect(parsedDroneData.length).toBe(4)
+  expect(parsedDroneData[0]).toHaveProperty(
+    "timeStamp",
+    "serialNumber",
+    "closestDistance",
+    "position",
+    "expireAt"
+  )
+  const dateObject = new Date(Date.parse(parsedDroneData[0].timeStamp))
+  const expireDate = dateObject.setMinutes(dateObject.getMinutes() + 10)
+
+  expect(expireDate).toEqual(parsedDroneData[0].expireAt)
 })
 
 test("drone owner data is parsed correctly", () => {
@@ -36,9 +53,12 @@ test("drone owner data is parsed correctly", () => {
 })
 
 test("owner is combined with drones correctly", async () => {
-  const owner = parseOwnerData(ownerData)
-  const droneList = await combineDronesWithOwners(droneData, (arg) => owner)
+  const droneList = await combineDronesWithOwners(droneData, (arg) => ownerData)
   droneList.forEach((drone) => {
-    expect(drone).toHaveProperty("owner")
+    expect(drone.owner).toMatchObject({
+      name: "Eric Kozey",
+      phoneNumber: "+210965769601",
+      email: "eric.kozey@example.com",
+    })
   })
 })
