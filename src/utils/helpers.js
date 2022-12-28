@@ -4,9 +4,10 @@ const Drone = require("../models/drones")
 const EventEmitter = require("events")
 const emitter = new EventEmitter()
 
-const parseDroneData = (data) => {
-  const timeStamp = data.report.capture._attributes.snapshotTimestamp
-  const drones = data.report.capture.drone
+const parseDroneData = (xmlData) => {
+  const jsonData = JSON.parse(xml2json(xmlData, { compact: true }))
+  const timeStamp = jsonData.report.capture._attributes.snapshotTimestamp
+  const drones = jsonData.report.capture.drone
 
   const parsedData = drones.map((drone) => {
     const dateObject = new Date(Date.parse(timeStamp))
@@ -37,8 +38,7 @@ const getIntruderDrones = (data) => {
 
 const updateDroneData = async () => {
   let droneData = await getDroneData()
-  const parsedData = JSON.parse(xml2json(droneData, { compact: true }))
-  let droneList = await combineDronesWithOwners(getIntruderDrones(parsedData))
+  let droneList = await combineDronesWithOwners(getIntruderDrones(droneData))
   await updateDroneDatabase(droneList)
 
   emitter.emit("DronesUpdated")
@@ -64,7 +64,7 @@ const updateDroneDatabase = async (droneList) => {
 const parseOwnerData = (data) => {
   return {
     name:
-      data.firstName || data.lastName
+      data.firstName && data.lastName
         ? `${data.firstName} ${data.lastName}`
         : null,
     phoneNumber: data.phoneNumber ? data.phoneNumber : null,
@@ -94,6 +94,10 @@ const withinNDZ = (dist) => {
   return dist <= 100000
 }
 
+const resetDatabase = async () => {
+  await Drone.deleteMany({})
+}
+
 module.exports = {
   parseDroneData,
   withinNDZ,
@@ -103,4 +107,5 @@ module.exports = {
   getIntruderDrones,
   updateDroneData,
   emitter,
+  resetDatabase,
 }

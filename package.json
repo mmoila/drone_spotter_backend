@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "NODE_ENV=test jest --verbose --runInBand --forceExit",
-    "dev": "nodemon src/index.js",
+    "dev": "NODE_ENV=reset-db nodemon src/index.js",
     "prettier": "prettier --write ."
   },
   "author": "Mikael Moilanen",
