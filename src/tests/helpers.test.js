@@ -1,5 +1,6 @@
 const { droneData, ownerData, rawDroneData } = require("./testHelper")
 const {
+  getIntruderDrones,
   updateDroneData,
   withinNDZ,
   parseOwnerData,
@@ -61,4 +62,9 @@ test("owner is combined with drones correctly", async () => {
       email: "eric.kozey@example.com",
     })
   })
+})
+
+test("intruder drones are filtered correctly", () => {
+  const intruders = getIntruderDrones(droneData, (data) => data)
+  expect(intruders.length).toBe(3)
 })

@@ -30,10 +30,8 @@ const parseDroneData = (xmlData) => {
   return parsedData
 }
 
-const getIntruderDrones = (data) => {
-  return parseDroneData(data).filter((drone) =>
-    withinNDZ(drone.closestDistance)
-  )
+const getIntruderDrones = (data, dataParser = parseDroneData) => {
+  return dataParser(data).filter((drone) => withinNDZ(drone.closestDistance))
 }
 
 const updateDroneData = async () => {
@@ -45,7 +43,7 @@ const updateDroneData = async () => {
 }
 
 const updateDroneDatabase = async (droneList) => {
-  droneList.forEach(async (drone) => {
+  dronePromises = droneList.map(async (drone) => {
     const query = { serialNumber: drone.serialNumber }
     const oldDrone = await Drone.findOneAndReplace(query, drone)
     if (oldDrone) {
@@ -59,6 +57,7 @@ const updateDroneDatabase = async (droneList) => {
       await new Drone(drone).save()
     }
   })
+  return Promise.all(dronePromises)
 }
 
 const parseOwnerData = (data) => {
@@ -105,6 +104,7 @@ module.exports = {
   distanceFromNest,
   combineDronesWithOwners,
   getIntruderDrones,
+  updateDroneDatabase,
   updateDroneData,
   emitter,
   resetDatabase,

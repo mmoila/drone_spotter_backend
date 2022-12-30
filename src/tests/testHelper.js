@@ -1,25 +1,31 @@
 const timeStamp = new Date(Date.now()).toISOString()
+const dateObject = new Date(Date.parse(timeStamp))
+const expireDate = dateObject.setMinutes(dateObject.getMinutes() + 10)
 
 const droneData = [
   {
     timeStamp: timeStamp,
     serialNumber: "SN-TAnpkSiEeM",
-    closestDistance: 430000,
+    closestDistance: 43000,
+    expireAt: expireDate,
   },
   {
     timeStamp: timeStamp,
     serialNumber: "SN-NPKLipw-si",
-    closestDistance: 990000.12393,
+    closestDistance: 99000.12393,
+    expireAt: expireDate,
   },
   {
     timeStamp: timeStamp,
     serialNumber: "SN-4T3aQSA1I-",
-    closestDistance: 999999.9999,
+    closestDistance: 99999.9999,
+    expireAt: expireDate,
   },
   {
     timeStamp: timeStamp,
     serialNumber: "SN-QfXINIqMIm",
     closestDistance: 120000,
+    expireAt: expireDate,
   },
 ]
 
