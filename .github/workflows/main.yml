@@ -1,0 +1,29 @@
+
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    
+env: 
+  TEST_MONGODB_URI: mongodb://127.0.0.1:27017/drones
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: 6.0
+      - name: install dependencies
+        run: npm install 
+      - name: run tests
+        run: npm run test
