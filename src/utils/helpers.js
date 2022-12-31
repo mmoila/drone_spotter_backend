@@ -1,8 +1,15 @@
-const { getDroneOwnerData, getDroneData } = require("./droneQuery")
 const { xml2json } = require("xml-js")
-const Drone = require("../models/drones")
 const EventEmitter = require("events")
+const { getDroneOwnerData, getDroneData } = require("./droneQuery")
+const Drone = require("../models/drones")
+
 const emitter = new EventEmitter()
+
+const distanceFromNest = ([posX, posY]) => {
+  const xFromCenter = Math.abs(posX - 250000)
+  const yFromCenter = Math.abs(posY - 250000)
+  return Math.hypot(xFromCenter, yFromCenter)
+}
 
 const parseDroneData = (xmlData) => {
   const jsonData = JSON.parse(xml2json(xmlData, { compact: true }))
@@ -14,7 +21,7 @@ const parseDroneData = (xmlData) => {
     const expireDate = dateObject.setMinutes(dateObject.getMinutes() + 10)
 
     return {
-      timeStamp: timeStamp,
+      timeStamp,
       serialNumber: drone.serialNumber._text,
       closestDistance: distanceFromNest([
         drone.positionX._text,
@@ -30,20 +37,31 @@ const parseDroneData = (xmlData) => {
   return parsedData
 }
 
-const getIntruderDrones = (data, dataParser = parseDroneData) => {
-  return dataParser(data).filter((drone) => withinNDZ(drone.closestDistance))
-}
+const parseOwnerData = (data) => ({
+  name:
+    data.firstName && data.lastName
+      ? `${data.firstName} ${data.lastName}`
+      : null,
+  phoneNumber: data.phoneNumber ? data.phoneNumber : null,
+  email: data.email ? data.email : null,
+})
 
-const updateDroneData = async () => {
-  let droneData = await getDroneData()
-  let droneList = await combineDronesWithOwners(getIntruderDrones(droneData))
-  await updateDroneDatabase(droneList)
+const withinNDZ = (dist) => dist <= 100000
 
-  emitter.emit("DronesUpdated")
+const combineDronesWithOwners = (droneList, getData = getDroneOwnerData) => {
+  const dronePromises = droneList.map(async (drone) => {
+    const ownerData = await getData(drone.serialNumber)
+    return {
+      ...drone,
+      owner: parseOwnerData(ownerData),
+    }
+  })
+
+  return Promise.all(dronePromises)
 }
 
 const updateDroneDatabase = async (droneList) => {
-  dronePromises = droneList.map(async (drone) => {
+  const dronePromises = droneList.map(async (drone) => {
     const query = { serialNumber: drone.serialNumber }
     const oldDrone = await Drone.findOneAndReplace(query, drone)
     if (oldDrone) {
@@ -60,37 +78,15 @@ const updateDroneDatabase = async (droneList) => {
   return Promise.all(dronePromises)
 }
 
-const parseOwnerData = (data) => {
-  return {
-    name:
-      data.firstName && data.lastName
-        ? `${data.firstName} ${data.lastName}`
-        : null,
-    phoneNumber: data.phoneNumber ? data.phoneNumber : null,
-    email: data.email ? data.email : null,
-  }
-}
+const getIntruderDrones = (data, dataParser = parseDroneData) =>
+  dataParser(data).filter((drone) => withinNDZ(drone.closestDistance))
 
-const combineDronesWithOwners = (droneList, getData = getDroneOwnerData) => {
-  const dronePromises = droneList.map(async (drone) => {
-    const ownerData = await getData(drone.serialNumber)
-    return {
-      ...drone,
-      owner: parseOwnerData(ownerData),
-    }
-  })
+const updateDroneData = async () => {
+  const droneData = await getDroneData()
+  const droneList = await combineDronesWithOwners(getIntruderDrones(droneData))
+  await updateDroneDatabase(droneList)
 
-  return Promise.all(dronePromises)
-}
-
-const distanceFromNest = ([posX, posY]) => {
-  const xFromCenter = Math.abs(posX - 250000)
-  const yFromCenter = Math.abs(posY - 250000)
-  return Math.hypot(xFromCenter, yFromCenter)
-}
-
-const withinNDZ = (dist) => {
-  return dist <= 100000
+  emitter.emit("DronesUpdated")
 }
 
 const resetDatabase = async () => {

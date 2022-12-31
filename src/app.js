@@ -1,7 +1,8 @@
 const express = require("express")
+
 const app = express()
-const { errorHandler } = require("./utils/middleware")
 const mongoose = require("mongoose")
+const { errorHandler } = require("./utils/middleware")
 const config = require("./utils/config")
 const { updateDroneData, resetDatabase } = require("./utils/helpers")
 
@@ -16,8 +17,7 @@ const startPolling = () => {
   }, 2000)
 }
 
-const connection = mongoose.connection
-connection.on("connected", async () => {
+mongoose.connection.on("connected", async () => {
   if (config.DATABASE_RESET) {
     await resetDatabase()
     startPolling()

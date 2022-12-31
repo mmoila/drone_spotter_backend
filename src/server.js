@@ -1,10 +1,11 @@
-const app = require("./app")
-const server = require("http").createServer(app)
 const WebSocket = require("ws")
+const http = require("http")
+const app = require("./app")
 const { emitter } = require("./utils/helpers")
 const Drone = require("./models/drones")
 
-const wss = new WebSocket.Server({ server: server })
+const server = http.createServer(app)
+const wss = new WebSocket.Server({ server })
 
 wss.on("connection", (ws) => {
   console.log("Websocket connection established")

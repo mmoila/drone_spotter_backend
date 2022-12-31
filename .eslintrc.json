@@ -1,0 +1,14 @@
+{
+  "extends": ["airbnb", "prettier", "plugin:node/recommended"],
+  "plugins": ["prettier", "jest"],
+  "rules": {
+    "semi": 0,
+    "no-console": 0,
+    "no-underscore-dangle": 0,
+    "quotes": [
+      2,
+      "double",
+      { "avoidEscape": true, "allowTemplateLiterals": true }
+    ]
+  }
+}
