@@ -27,5 +27,6 @@ mongoose.connection.on("connected", async () => {
 })
 
 app.use(errorHandler)
+app.use(express.static("build"))
 
 module.exports = app
