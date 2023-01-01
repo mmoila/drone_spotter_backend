@@ -28,5 +28,5 @@ jobs:
       - name: run tests
         run: npm run test -- --coverage
       - name: upload to codecov
-        run: curl -Os https://uploader.codecov.io/latest/linux/codecov; chmod +x codecov ./codecov
+        run: curl -Os https://uploader.codecov.io/latest/linux/codecov; chmod +x codecov; ./codecov
 
