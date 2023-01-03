@@ -1,9 +1,6 @@
 const { xml2json } = require("xml-js")
-const EventEmitter = require("events")
 const { getDroneOwnerData, getDroneData } = require("./droneQuery")
 const Drone = require("../models/drones")
-
-const emitter = new EventEmitter()
 
 const distanceFromNest = ([posX, posY]) => {
   const xFromCenter = Math.abs(posX - 250000)
@@ -85,8 +82,6 @@ const updateDroneData = async () => {
   const droneData = await getDroneData()
   const droneList = await combineDronesWithOwners(getIntruderDrones(droneData))
   await updateDroneDatabase(droneList)
-
-  emitter.emit("DronesUpdated")
 }
 
 const resetDatabase = async () => {
@@ -102,6 +97,5 @@ module.exports = {
   getIntruderDrones,
   updateDroneDatabase,
   updateDroneData,
-  emitter,
   resetDatabase,
 }
