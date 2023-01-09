@@ -29,6 +29,8 @@ jobs:
         run: npm run test -- --coverage
       - name: upload to codecov
         run: curl -Os https://uploader.codecov.io/latest/linux/codecov; chmod +x codecov; ./codecov
+      - name: install eslint airbnb config
+        run: npm i eslint-config-airbnb
       - name: run lint
         run: npm run lint
 
