@@ -9,7 +9,7 @@
   "scripts": {
     "test": "NODE_ENV=test jest --verbose --runInBand --forceExit",
     "dev": "NODE_ENV=reset-db nodemon index.js",
-    "local-build": "cd ../drone_spotter_frontend && npm run build && cp -r build ../drone_spotter_backend",
+    "local-build": "rm -rf build && cd ../drone_spotter_frontend && npm run build && cp -r build ../drone_spotter_backend",
     "start": "node index.js",
     "prettier": "prettier --write .",
     "lint": "eslint ."
