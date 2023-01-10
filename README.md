@@ -1,4 +1,5 @@
 # Drone spotter back-end
+Back-end code for Reaktor Developer Trainee Pre-Assignment 2023
 
 ![CI tests](https://github.com/mmoila/drone_spotter_backend/actions/workflows/main.yml/badge.svg)
 [![codecov](https://codecov.io/gh/mmoila/drone_spotter_backend/branch/main/graph/badge.svg?token=6HfeX7tAid)](https://codecov.io/gh/mmoila/drone_spotter_backend)
