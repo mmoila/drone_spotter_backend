@@ -7,11 +7,16 @@ const server = http.createServer(app)
 const wss = new WebSocket.Server({ server })
 
 const sendDroneData = async (ws) => {
-  let drones = await Drone.find({})
+  let drones = await Drone.find({
+    expireAt: { $gte: new Date() },
+  }).exec()
+
   ws.send(JSON.stringify(drones))
 
   setInterval(async () => {
-    drones = await Drone.find({})
+    drones = await Drone.find({
+      expireAt: { $gte: new Date() },
+    }).exec()
     ws.send(JSON.stringify(drones))
   }, 2000)
 }
