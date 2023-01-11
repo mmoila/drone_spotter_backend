@@ -16,7 +16,7 @@ The back end polls every two seconds for drone data in assignments.reaktor.com/b
 The back-end uses MongoDB to store the data for 10 minutes. When a client connects to the URL above, a websocket connection is established between the front and back-end.
 This connection is used to provide drone data to the React application which displays the data in a table and also in a map view.
 
-The application's table shows a list of intruder drones from the past 10 minutes and the closest confimed distance to the nest. The map view shows visually the latest observation of drones from the past 10 minutes.
+The application's table shows a list of intruder drones from the past 10 minutes and the closest confimed distance to the nest. The map view shows visually the latest observation of drones from the past 10 minutes. Observations outside the NDZ (100 m radius from the nest) are not recorded.
 The closest observation (and other additional info) in the map view can be checked by clicking (or tapping) the respective drone icon on the map.
 
 ## Running the app on a local computer (for Linux and MacOS)
