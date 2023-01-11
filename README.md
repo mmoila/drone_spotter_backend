@@ -4,9 +4,9 @@ Back-end code for Reaktor Developer Trainee Pre-Assignment 2023
 ![CI tests](https://github.com/mmoila/drone_spotter_backend/actions/workflows/main.yml/badge.svg)
 [![codecov](https://codecov.io/gh/mmoila/drone_spotter_backend/branch/main/graph/badge.svg?token=6HfeX7tAid)](https://codecov.io/gh/mmoila/drone_spotter_backend)
 
-Link to [front-end repository](https://github.com/mmoila/drone_spotter_frontend)
+Link to [front-end repository](https://github.com/mmoila/drone_spotter_frontend).
 
-The running application can be accessed via https://drone-stalker.fly.dev/
+The running application can be accessed via https://drone-stalker.fly.dev/.
 
 ## About
 
@@ -23,9 +23,14 @@ The closest observation (and other additional info) in the map view can be check
 
 You can run the app locally by following these steps:
 
-- Download the back-end and the linked front-end folders under the same parent folder.
-- Set at least MONGODB_URI environmental variable for the database. You can use local MongoDB or MongoDB Atlas.
-- Install required dependencies
+- Download the back-end and the linked front-end repository under the same parent folder. Folder names should be drone_spotter_backend and drone_spotter_frontend.
+- Set at least MONGODB_URI environmental variable for the database in the back-end folder. You can use local MongoDB or MongoDB Atlas.
+- Install required dependencies in the back-end folder:
+
+  ```bash 
+  npm run install-dependencies
+  ```
+
 - Run the build script from the back-end folder:
 
   ```bash
