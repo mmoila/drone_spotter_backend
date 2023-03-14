@@ -1,9 +1,9 @@
 const { getDroneData, getDroneOwnerData } = require("../utils/droneQuery")
 const { xml2json } = require("xml-js")
 
-test("returns null if dronequery fails", async () => {
+test("returns empty object if dronequery fails", async () => {
   const droneData = await getDroneData("www.dronedata.")
-  expect(droneData).toBeNull()
+  expect(droneData).toMatchObject({})
 })
 
 describe("When getting owner data", () => {

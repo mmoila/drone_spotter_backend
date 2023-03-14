@@ -80,7 +80,7 @@ const getIntruderDrones = (data, dataParser = parseDroneData) =>
 
 const updateDroneData = async () => {
   const droneData = await getDroneData()
-  if (droneData) {
+  if (Object.keys(droneData).length !== 0) {
     const droneList = await combineDronesWithOwners(
       getIntruderDrones(droneData)
     )

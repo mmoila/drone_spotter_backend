@@ -7,7 +7,8 @@ const getDroneData = async (
     const response = await axios.get(url)
     return response.data
   } catch (error) {
-    return null
+    console.log(`An error occurred while fetching drone data: ${error}`)
+    return {}
   }
 }
 
@@ -18,6 +19,7 @@ const getDroneOwnerData = async (serialNumber) => {
     )
     return response.data
   } catch (error) {
+    console.log(`An error occurred while fetching pilot data: ${error}`)
     return {}
   }
 }
